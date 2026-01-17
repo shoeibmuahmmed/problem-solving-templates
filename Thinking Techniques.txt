@@ -1,0 +1,181 @@
+
+
+/* How to tackle the problem */
+(1) Think Forward, then Backward.
+(2) Check if brute force is possible.
+(3)
+
+
+
+/* General */
+(1) Compression technique!  If small n and large numbers
+(2) WA in further tests  Overflow (sm of many numbers!)
+(3) TLE  Unordered map + hash functions instead of map
+(4) mem with -1, 0, 1, and fill with another numbers
+(5) Don't divide with a global divisor not const!!!!!!!
+Integer division is an extremely slow operation. However, if the divisor is a constant,
+the compiler can optimize it by changing the operation into several non-division operations and it can significantly boost the execution speed.
+(6) TLE  get away from accessing map alot of time!!
+(7) using this line multiple line (vector < ll > v = mp[pre[r]];) may cause a TLE, use (vector < ll > &v = mp[pre[r]];)
+(8) comparing two doubles  abs(x - y) < eps
+(9) O(1e8) = 1second, maybe 1e9 with luck (including simple operations, good caching and etc.)
+(10) mod operations have bad time complexity  While(ret >= MOD) ret -= MOD;
+(11) bitset is much faster when converting decimal to binary!
+(12) In DP for getting Probability, if u choose then no probability for random choosing, and max on the ret.
+(13) Bitwise operators are faster than Algebric operations.
+(14) Local variables are stored on the stack, which has a limited size, if the DP array is large, defining it in main could lead to a stack overflow,
+while Global variables are stored in the data segment of memory, which generally allows larger allocations.
+(15)
+(16) Sometimes the bruteforce soltutions ends early bcos of a special case u didn't recognize it  so write the bruteforce solution first, then think about time complexity.
+(17) for(i=1;i<=n;i++) for(j=i;j<=n;j+=i)  O(n * log(n))
+(18) in binary search if u work ... t t f f ..., then u must be sure that there is at least one true, or viceversa.
+(19) avoid doubles operations  TLE, use continue to avoid expected zero result.
+(20) map may be faster than vector, if the distinct values in not big!  ex) https://codeforces.com/contest/2065/problem/F
+(21) WA in edu round  Binary Search
+(22) WA in a weird test case number  OF, using int not ll, ...
+(23) binary search optimization is two pointers.
+(24) Binary search trick  shuffle(all(a), rng);  https://codeforces.com/blog/entry/62602, https://codeforces.com/problemset/problem/1101/F, https://www.acmicpc.net/problem/26001
+     O(n*log(x))  O(n + log(n)*log(x))
+(25) min(x, y) = (x + y)/2 - |x - y|/2
+
+
+
+/* XOR properties */
+(1) (x^y) <= x + y
+(2)
+
+
+
+/* Math shit */
+(1) no. of prime numbers < n is about (n/log(n)).
+(2) ones(x ^ y) = ones(x) + ones(y)
+(3) even subsets = odd subsets = 2^(n - 1)
+(4)
+
+
+
+/* Combinatorics */
+(1) the number of ways (by moving left/down, or right/up) to go from (x1, y1) to (x2, y2) is
+   (abs(x2 - x1) + abs(y2 - y1)) C abs(x2 - x1) = (abs(x2 - x1) + abs(y2 - y1)) C abs(y2 - y1)  = (abs(x2 - x1) + abs(y2 - y1))! / (abs(x2 - x1)! * abs(y2 - y1)!)
+(2) pigeonhole principle: If there are n+1 pigeons and n pigeonholes, then there is at least one pigeonhole with more than one pigeon in it.
+(3) Stars and bars:
+    The number of ways to put n identical objects into m labeled boxes is (n + m - 1)C(n) = (n + m - 1)C(m - 1) =  (n + m - 1)! / (n)! * (m - 1)!
+    The number of ways to pick n elements from a set on m elements with repetitions (replacement) is (n + m - 1)C(n) = (n + m - 1)C(m - 1) =  (n + m - 1)! / (n)! * (m - 1)!
+(4) The Inclusion-Exclusion Principle(+, -, +, -, ...) (odd +ve, even -ve): S(A U B U C) = S(A) + S(B) + S(C) - S(A ∩ B) - S(A ∩ C) - S(B ∩ C) + S(A ∩ B ∩ C),
+    find the formula of S(a ∩ B ∩ ...) ?, (mask starts with 1 not 0)
+(5) Catalan Number (1, 1, 2, 5, 14, 42, 132, 429, 1430, ...): (2n)C(n) / (n + 1)
+(6) Derangement means creating new array where all old_a[i] != new_a[i], always there is an answer when cnt_big_freq <= floor(n/2), shift around the most frequency number.
+(7) The number of different derangements of an array (all elements must be distinct) is DP(n) = (n−1) * (DP(n−1) + DP(n−2)).
+(8) (n + m) C (m) = (n + m) C (n)
+(9) The number of ways to arrange n distinct objects in a circle is (n - 1)!
+(10) Burnside's lemma / Pólya enumeration theorem : the number of distinct objects = sum of representations under all symmetries / number of symmetries
+    The no. of distinct necklaces of n stones, m colors (available movement is Rotation only) = sum[i=0->n-1](m^(gcd(i, n))) / n
+(11) hockey-stick identity: (1)C(j) + (2)C(j) + (3)C(j) + ... + (i)C(j) = (i + 1)C(j + 1)
+(12)
+
+
+/* FFT */
+(1) make sh equal to the max element  better time complexity.
+(2)
+
+
+
+/* Graph */
+(1) TLE in BFS  think about multi-source bfs, reverse directed graph edges, ...
+(2) In Dijkstra, every node can have more than one state  multi-dimensional dist array.
+(3)
+
+
+
+/* DP */
+- Take care that dp values are always positive when using mem(dp, -1).
+- values may be very large, but small space  use map.
+- To reduce parameters  think about using upper/lower bound.
+- Parameter values may be large, but small different numbers (https://codeforces.com/problemset/problem/506/A).
+- take care of time complexity of mod_operations (https://cses.fi/problemset/task/1635).
+- nested knapsack (https://codeforces.com/contest/687/problem/C).
+- O(1e8) & TLE  DP Iterative + vector of dp to save useless memory
+- TLE  vis
+- it's okay if there is no if_conditions in the slv (https://codeforces.com/contest/1954/problem/D).
+- ret initialization is the stop case.
+- all states must be independent (dependent states (inferenced variables) removed from dp, and still in slv).
+- when there r multiple test cases  (vis + tt) is much much better than mem dp every test.
+- check inf, inf2, oo, ... specifically when WA.
+- MLE  make the (dp, slv, ret) int instead of ll.
+- You may get TLE, because using mem multiple times, ll, vector, ....
+- push loop to parameter  may save time.
+- push parameter to loop  always save memory.
+- rollback technique in iterative dp to save memory.
+- u can get rid of loops by using dp iterative + prefix (https://atcoder.jp/contests/dp/submissions/59512811).
+- push parameter to be the return of the slv + for loop in main.
+- the order of the if conditions of the slv is important, or u may get TLE (specially the mask in dp bitmask don't put it in the first).
+- take care from comparing strings inside the slv of the dp, it'll cause TLE  comparing strings in O(n)  pre-process comparing.
+- If Recursive DP cause overflow!  iterative dp, or create ur own stack, or call slv() many time from bottom to up before solving.
+- ld dp[]  check if visited  if(ret == ret) or if(dp[] > -1) or if(fabs(dp[] + 1) > eps).
+- if the base case is for example O(n), or O(n^2), put the memo check in first in the slv function.
+- u can use both vetor & map for memoization at the same time (vector for small numbers, map for large numbers).
+- if there is alot of test cases  try to relate the different test cases together and do only one memo at the main (it's much better then using vis & tt).
+- small n (20 - 25)  DP with bitmask.
+- DB Bit-mask on numbers of base 3 is a good idea  3^15 = 1e7 (https://codeforces.com/gym/104493/problem/A)
+- Operations that take small const time in the slv(), don't ignore it if u can pre-calculate it! it will save alot of time!
+- Don't define the array in the main function in Iterative DP.
+- slv(l, mask) can be optimized to slv(mask), where l = number of ones in the mask!
+- Do we really need to visit all the states? (sometimes the most of the states can be ignored because they will never be reached and this can reduce your time complexity
+  and memory complexity.).  (https://codeforces.com/contest/505/problem/C)
+- Change the object to dp.  (https://codeforces.com/contest/559/problem/C)
+- Open and Close Interval Trick. (https://codeforces.com/contest/626/problem/F, https://codeforces.com/contest/466/problem/D, https://codeforces.com/contest/367/problem/E)
+- Iterative DP can solve TLE or MLE that happens with Recursive DP.
+- a,b <= 1e5, but a*b <= 1e7  use vector and assign it every time.
+- Binary Seacrh + DP Digit  use one time memo trick.
+-
+
+
+/* FFT */
+(1) sometimes the cofficient just be 1 not freq, when u don't need the counting, but the values, to save from TLE, MLE  https://codeforces.com/problemset/problem/632/E
+(2)
+
+
+/* Range Problems */
+(1) think about Sliding Window (Two Pointers).
+(2)
+
+
+
+/* Segment Tree */
+(1) Vector of segTree
+(2) int instead of ll
+(3) can be used when ask the nearest element have specific property
+(4)
+
+
+
+
+/* SQRT Decomposition & Mo's algorithm */
+(1)
+(2)
+(3) Heavy/light nodes  There is at most sqrt(m) heavy nodes with degree at least sqrt(m)!, light nodes (brute force on their neighbours) (https://codeforces.com/contest/398/problem/D)
+(4) std::mt19937_64 rng(std::chrono::system_clock::now().time_since_epoch().count());  rng()  [0, 2^(64) - 1] (https://codeforces.com/problemset/problem/840/D)
+(5) both same idea! (xor, prefix sum) (https://codeforces.com/problemset/problem/617/E, https://codeforces.com/problemset/problem/877/F)
+(6)
+
+/* String Processing */
+(1) string hashing, prefix hashing, ..
+(2) most string methods take O(n) like .substr(i, len), +=, =, ==, .find(substring), ....
+(3) smaller hashing value doesn't mean the smaller lexicographically string.
+(4) If getting TLE in Hashing  use single hashing.
+(5) when the brute force solution is sliding window + operations with big time like comparing all elements in the range.
+(7)
+
+
+
+
+
+
+/* Games */
+(1) If there is only one pile & u can't get a pattern  may the grundy values be always non-zero after specific number.
+(2)
+(3)
+(4)
+
+
+

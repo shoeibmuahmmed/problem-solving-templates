@@ -1,0 +1,367 @@
+
+
+// get mex in linear time & space in O(n)
+ll mex(vector < ll > &a)
+{
+    vector < ll > b = a;
+    ll n = (ll)b.size();
+    for(ll i = 0; i < n; i++)
+    {
+        while(b[i] >= 0 && b[i] < n && b[b[i]] != b[i])
+            swap(b[i], b[b[i]]);
+    }
+    for(ll i = 0; i < n; i++)
+    {
+        if(b[i] != i)
+            return i;
+    }
+    return n;
+}
+
+
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+// array compression in O(n)
+
+map < ll, ll > num_to_id, id_to_num;
+
+void apply_compression(vector < ll > &a)
+{
+    num_to_id.clear(); id_to_num.clear();
+
+    set < ll > st;
+    for(const auto &i : a)
+        st.insert(i);
+
+    ll curr = 0; // start
+    map < ll, ll > id;
+    for(const auto &i : st)
+    {
+        num_to_id[i] = curr;
+        id_to_num[curr] = i;
+        curr++;
+    }
+
+    for(auto &i : a)
+        i = num_to_id[i];
+}
+
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+// generate all possible permutations
+// heavy memory (use dp bitmask if needed)
+
+vector < vector < ll > > gen(ll n)
+{
+    vector < vector < ll > > p;
+    vector < ll > nums;
+    for (ll i = 1; i <= n; i++) nums.push_back(i);
+    do
+    {
+        p.push_back(nums);
+    }
+    while (next_permutation(nums.begin(), nums.end()));
+
+    return p;
+}
+
+
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+// prefix 2d
+vector < vector < ll > > pre(n, vector < ll > (n, 0));
+for(ll i = 0; i < n; i++)
+{
+    for(ll j = 0; j < n; j++)
+    {
+        pre[i][j] = a[i][j];
+
+        if(i > 0) pre[i][j] += pre[i - 1][j];
+        if(j > 0) pre[i][j] += pre[i][j - 1];
+        if(i > 0 && j > 0) pre[i][j] -= pre[i - 1][j - 1];
+    }
+}
+
+ll query(ll x1, ll y1, ll x2, ll y2)
+{
+    ll sm = pre[x2][y2];
+    if(x1 > 0) sm -= pre[x1 - 1][y2];
+    if(y1 > 0) sm -= pre[x2][y1 - 1];
+    if(x1 > 0 && y1 > 0) sm += pre[x1 - 1][y1 - 1];
+    return sm;
+}
+
+//---------------------------- D&C
+
+// i want the sum of xor/and/or of each pair in the range [l, r]
+ll query(ll x, ll y)
+{
+    ll x1 = x, y1 = x, x2 = y, y2 = y;
+    ll sm = pre[x2][y2] - pre[x1 - 1][y2] - pre[x2][y1 - 1] + pre[x1 - 1][y1 - 1];
+    return (sm >> 1ll);
+}
+
+pre.assign(n + 1, vector < ll > (n + 1, 0));
+for(ll i = 1; i <= n; i++)
+{
+    for(ll j = 1; j <= n; j++)
+    {
+        pre[i][j] = (a[i] ^ a[j]);
+        pre[i][j] += pre[i][j - 1];
+        pre[i][j] += pre[i - 1][j];
+        pre[i][j] -= pre[i - 1][j - 1];
+    }
+}
+
+//---------------------------------- D&C
+
+// cost[l][r] is the number of pairs in range [l, r] where (a[i] > a[j]), l <= i < j <= r.
+cost.assign(n + 2, vector < ll > (n + 2, 0));
+for(ll len = 1; len <= n; len++)
+{
+    for(ll i = 1; i <= n; i++)
+    {
+        ll j = i + len - 1; if(j > n) break;
+        cost[i][j] = cost[i][j - 1] + cost[i + 1][j] - cost[i + 1][j - 1] + (a[i] > a[j]);
+    }
+}
+
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+/* Functions to get the index of the next/porevious greater/smaller or equal to every index */
+// you access with index not value
+// (flag = 0) means no equality is included.
+
+
+vector < ll > next_greater(vector < ll > a, ll flag = 0)
+{
+    stack < pair < ll, ll > > st;
+    ll n = a.size();
+
+    vector < ll > greater(n, n); // neutral
+
+    for (ll i = 0; i < n; i++)
+    {
+        if(st.empty() || ((!flag && a[i] <= st.top().first) || (flag && a[i] < st.top().first)))
+        {
+            st.push(make_pair(a[i], i));
+        }
+        else
+        {
+            while(!st.empty() && ((!flag && a[i] > st.top().first) || (flag && a[i] >= st.top().first)))
+            {
+                greater[st.top().second] = i; // i, or a[i]
+                st.pop();
+            }
+            st.push(make_pair(a[i], i));
+        }
+    }
+
+    return greater;
+}
+
+vector < ll > next_smaller(vector < ll > a, ll flag = 0)
+{
+    stack < pair < ll, ll > > st;
+    ll n = a.size();
+
+    vector < ll > smaller(n, n); // neutral
+
+    for (ll i = 0; i < n; i++)
+    {
+        if(st.empty() || ((!flag && a[i] >= st.top().first) || (flag && a[i] > st.top().first)))
+        {
+            st.push(make_pair(a[i], i));
+        }
+        else
+        {
+            while(!st.empty() && ((!flag && a[i] < st.top().first) || (flag && a[i] <= st.top().first)))
+            {
+                smaller[st.top().second] = i; // i, or a[i]
+                st.pop();
+            }
+            st.push(make_pair(a[i], i));
+        }
+    }
+
+    return smaller;
+}
+
+vector < ll > previous_greater(vector < ll > a, ll flag = 0)
+{
+    stack < pair < ll, ll > > st;
+    ll n = a.size();
+
+    vector < ll > greater(n, -1); // neutral
+
+    for(ll i = n - 1; i >= 0; i--)
+    {
+        if(st.empty() || ((!flag && a[i] <= st.top().first) || (flag && a[i] < st.top().first)))
+        {
+            st.push(make_pair(a[i], i));
+        }
+        else
+        {
+            while(!st.empty() && ((!flag && a[i] > st.top().first) || (flag && a[i] >= st.top().first)))
+            {
+                greater[st.top().second] = i; // i, or a[i]
+                st.pop();
+            }
+            st.push(make_pair(a[i], i));
+        }
+    }
+
+    return greater;
+}
+
+vector < ll > previous_smaller(vector < ll > a, ll flag = 0)
+{
+    stack < pair < ll, ll > > st;
+    ll n = a.size();
+
+    vector < ll > smaller(n, -1); // neutral
+
+    for (ll i = n - 1; i >= 0; --i)
+    {
+        if(st.empty() || ((!flag && a[i] >= st.top().first) || (flag && a[i] > st.top().first)))
+        {
+            st.push(make_pair(a[i], i));
+        }
+        else
+        {
+            while(!st.empty() && ((!flag && a[i] < st.top().first) || (flag && a[i] <= st.top().first)))
+            {
+                smaller[st.top().second] = i; // i, or a[i]
+                st.pop();
+            }
+            st.push(make_pair(a[i], i));
+        }
+    }
+
+    return smaller;
+}
+
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+ll L = 1, R = 0, sm = 0; // 1-indexed
+void add(ll i)
+{
+    freq[a[i]]++;
+    if(freq[a[i]] == 1) sm++;
+}
+
+void rem(ll i)
+{
+    freq[a[i]]--;
+    if(freq[a[i]] == 0) sm--;
+}
+
+void move(ll l, ll r)
+{
+    while(R < r) add(++R);
+    while(L > l) add(--L);
+    while(R > r) rem(R--);
+    while(L < l) rem(L++);
+}
+
+
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+struct _data
+{
+    ll d, b, s, p;
+    bool operator < (const _data &other) const { return d < other.d; }
+};
+
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+ll cost[205][(ll)5e3 + 3][15];
+void precompute()
+{
+    for(ll i = 1; i <= m; i++) for(ll j = 1; j <= n; j++) cost[i][j][0] = b[j][i];
+
+    for(ll t = 1; t <= m; t++)
+    {
+        for(ll j = 1; j <= __lg(n); j++)
+        {
+            for(ll i = 1; i + (1 << j) - 1 <= n; i++)
+            {
+                cost[t][i][j] = max(cost[t][i][j - 1], cost[t][i + (1 << (j - 1))][j - 1]);
+            }
+        }
+    }
+}
+
+ll quey(ll t, ll l, ll r) // get max value in column t from row l to row r.
+{
+    ll mid = __lg(r - l + 1);
+    return max(cost[t][l][mid], cost[t][r - (1ll << mid) + 1][mid]);
+}
+
+
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+ll get(ll x) // xor[1...x]
+{
+    if (x % 4 == 0) return x;
+    if (x % 4 == 1) return 1;
+    if (x % 4 == 2) return x + 1;
+    if (x % 4 == 3) return 0;
+}
+
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+struct Compressor {
+    vector<ll> values;
+    int n;
+    void init() {
+        values.clear();
+        n = 0;
+    }
+    void add(ll x) { values.pb(x); }
+    void run() {
+        sort(all(values));
+        values.resize(unique(all(values)) - values.begin());
+        n = values.size();
+    }
+    int compress(ll x) { return lower_bound(all(values), x) - values.begin(); }
+    int greatestSmallerThanOrEqual(ll x) { return (upper_bound(all(values), x) - values.begin()) - 1; }
+    int greaterThanOrEqual(ll x) { return (lower_bound(all(values), x) - values.begin()); }
+    ll decompress(int p) { return values[p]; }
+} compressor;
+
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <deque>
+#include <set>
+#include <cmath>
+#include <complex>
+#include <algorithm>
+#include <cassert>
+#include <utility>
+#include <iomanip>
+#define _USE_MATH_DEFINES
+using namespace std;
+
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// maximize
+for(ll i = n; i >= 1; i--)
+{
+    ll low = 1, high = n - i, mid1, mid2;
+    while(high - low > 3)
+    {
+        mid1 = low + (high - low)/3;
+        mid2 = high - (high - low)/3;
+        if(eval(i, mid1) < eval(i, mid2)) low = mid1 + 1;
+        else high = mid2 - 1;
+    }
+    for(ll j = low; j <= high; j++) res = max(res, eval(i, j));
+}
+
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
